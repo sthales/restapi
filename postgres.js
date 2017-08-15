@@ -5,94 +5,38 @@ var _ = require('underscore')._;
 /** Assert */
 var assert = require('assert');
 
-const connObject = new pg.Pool({
+
+const client = new pg.Client({
   user: 'niko',
   host: 'localhost',
-  database: 'teste',
+  database: 'aew_db_final',
   password: 'romero',
   port: 5432
 });
 
-var items = new Object();
-
-class Postgres{
-    constructor(items){
-        this.items = items;
-    }
-    getUsers() {
-        //var items = new Object();
-        
-        var sql = 'SELECT * FROM usuarios;';
-        connObject.query(sql,(err,result)=>{
-            assert.ok(err == null ,err);
-            this.items = Object.assign({}, result.rows);
-        });
-        
-        
-        return this.items;
-    }
+const connect = ()=> {
+    client.connect((err)=>{
+        if(!err){
+            assert(err, 'Erro de conexão');
+        }else{
+            console.log("conectado");
+        }
+    });
 }
 
+client.connect();
+    
+    
+const getAplicativos = (callback)=> {
+    client.query("SELECT * from aplicativos",(err,results) =>{
+        if(err){
+            return callback(err);
+        }
+        callback(null,results.rows);
+    });
+}    
 
-// var Postgres= ()=>{
-  
-//     assert(connObject, 'Need a connectionString');
-//     var run = (sql,params,next)=>{
-//         pg.connect(connObject,(err,db,done)=>{
-//             assert.ok(err == null ,err);
-//             db.query(sql,params,(err,result)=>{
-//                 done();
-//                 pg.end();
-//                 if(err){
-//                     next(err,null);
-//                 }else{
-//                     next(null,result.rows);
-//                 }
-//             });
-//         });
-//     };
-//     this.getUsers = ()=>{
-//         var sql = "select * from usuarios;";
-//         run(sql,params,next);
-//     }
-// }
-
-/**
- * var postgres = function(args){
-    assert(args.connectionString,'Need a connectionString');
-    var run = function(sql,params,next){
-        pg.connect(args.connectionString,function(err,db,done){
-            //throw if there's connection error
-            assert.ok(error == null ,err);
-            db.query(sql,params,function(err,result){
-                // we have the results, release the connection
-                done();
-                pg.end();
-                if(err){
-                    next(err,null);
-                }else{
-                    next(null,result.rows);
-                }
-            });
-        });
-    };
-    this.save = function(tbl,doc,next){
-        var sql = "select * from save_document($1, $2);";
-        var params = [tbl,doc];
-        run(sql,params,next);
-    };
-    this.findById = function(tbl,id,next){
-
-    };
-    this.find = function(tbl,criteria,next){
-
-    };
-    this.filter = function(tbl,criteria,next){
-
-    };
-    this.search = function(tbl,term,next){
-
-    };
+module.exports = {
+    connect,
+    getAplicativos
 };
-*/
-module.exports = Postgres;

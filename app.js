@@ -1,11 +1,24 @@
 /** Express import */
 var express = require('express');
 var app = express();
+
+module.exports = app;
+
 var port = process.env.port || 3500;
 var apiRouter = express.Router();
 /** postgres string connection */
-const Postgres = require('./postgres');
-var pg = new Postgres();
+
+//const connObject = new Pool({
+//  user: 'niko',
+//  host: 'localhost',
+//  database: 'aew_db_final',
+//  password: 'romero',
+//  port: 5432
+//});
+/** model */
+const db = require('./postgres');
+
+db.connect();
 
 
 
@@ -14,12 +27,18 @@ var pg = new Postgres();
 //    consol.log(res);
 //});
 
-apiRouter.route('/usuarios')
-    .get(function(req,res){
-        res.set({"Content-Type": "application/json; charset=utf-8"});
+apiRouter.route('/aplicativos')
+    .get(function(req,res,next){
+        //res.set({"Content-Type": "application/json; charset=utf-8"});
+        db.getAplicativos((err,apps) => {
+            if(err){
+                return next(err);
+            }else{
+                res.json(apps);
+            }
+        });
         
-        var responseJson = pg.getUsers();
-        res.json(responseJson);
+        
     });
 app.use('/api',apiRouter);
 
