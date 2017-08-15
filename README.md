@@ -27,3 +27,7 @@ BgBlue = "\x1b[44m"
 BgMagenta = "\x1b[45m"
 BgCyan = "\x1b[46m"
 BgWhite = "\x1b[47m"
+
+### para remover un archivo que no quieras enviar en el commit
+git add -u
+git reset -- main/dontcheckmein.txt
