@@ -19,16 +19,18 @@ const connect = ()=> {
         if(!err){
             assert(err, 'Erro de conexão');
         }else{
-            console.log("conectado");
+            var banco = client.connectionParameters.database;
+            console.log('\x1b[36m%s\x1b[0m',"Conetado ao banco de dados " + banco + " com sucesso!!");
         }
     });
 }
-
+/** Permite a coneção ao banco */
 client.connect();
     
     
 const getAplicativos = (callback)=> {
-    client.query("SELECT * from aplicativos",(err,results) =>{
+    params = [5];
+    client.query("SELECT * from aplicativos LIMIT $1;",params,(err,results) =>{
         if(err){
             return callback(err);
         }

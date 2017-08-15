@@ -3,7 +3,7 @@ var app = express();
 var appsEducacionais = express.Router();
 appsEducacionais.get('/', function(req, res) { });
 appsEducacionais.post('/', function(req, res) { });
-appsEducacionais.get('/:id', function(req, res) { });
+appsEducacionais.get('/:id([0-9]+)', function(req, res) { });
 appsEducacionais.patch('/:id', function(req, res) { });
 appsEducacionais.delete('/:id', function(req, res) { });
 

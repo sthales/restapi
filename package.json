@@ -2,17 +2,20 @@
   "name": "restful",
   "version": "1.0.0",
   "description": "Curso de endpoint resfull con nodejs y express",
-  "main": "app.js",
+  "main": "servidor.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nicolás Romero <nikoz.1984@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "cors": "^2.8.4",
     "express": "^4.15.4",
-    "gulp": "^3.9.1",
-    "gulp-nodemon": "^2.2.1",
     "pg": "^7.1.0",
     "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-nodemon": "^2.2.1"
   }
 }
