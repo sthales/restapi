@@ -26,11 +26,16 @@ apiRouter.route('/aplicativos')
         });
     });
 
-app.use((err,req,res,next)=>{
-    res.send(err);
+app.use((error,req,res,next) => {
+    res.send(error);
 });
+/** inicio */
 app.get('/',function(req,res){
     res.send('Bemvindo a nosso API');
+});
+/** no encontrado */
+app.get('*', function(req, res){
+  res.send('humm???', 404);
 });
 app.listen(port,function(){
     console.log('Servidor iniciado na porta ' + port);

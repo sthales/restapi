@@ -1,0 +1,158 @@
+﻿CREATE EXTENSION unaccent;
+SELECT unaccent('èéêë comunicação');
+CREATE EXTENSION pg_trgm;
+SELECT similarity('Something','something');
+SELECT similarity('Something','samething');
+SELECT similarity('Something','unrelated');
+SELECT similarity('Something','everything');
+SELECT similarity('Something','omething');
+
+-- configurações DB postgres
+-- linea comando \dF
+SHOW default_text_search_config;
+-- SET default_text_search_config='pg_catalog_portuguese';
+--É possível também fazer uso do dicionário simple, que é uma das funcionalidades embutidas de configuração para busca textual que o PostgreSQL oferece. O dicionário simple não ignora stop words e não tenta encontrar fonemas(stem) de uma palavra. Com simple cada grupo de caracteres separados por um espaço é um lexema. A configuração do dicionário simple para busca textual é eficiente para dados como por exemplo o nome de uma pessoa para o qual não precisamos identificar o fonema(stem) do nome desta pessoa.
+SELECT to_tsvector('simple', 'We are running');
+SELECT to_tsvector('rato gato pato');
+--negação
+SELECT !! to_tsquery('gato | rato') @@ to_tsvector('gatas')
+SELECT !! to_tsquery('gato | rato') @@ to_tsvector('abobrinha');
+-- @> contém outra query
+SELECT to_tsquery('gato | rato | cão') @> to_tsquery('cão & rata'); 
+SELECT to_tsquery('gato | roda') @> to_tsquery('navio & macaco');
+-- <@ está contida em outra tsquery
+SELECT to_tsquery('moto & carro') <@ to_tsquery('moto | carro | ônibus');
+SELECT to_tsquery('moto | carro | ônibus') <@ to_tsquery('moto & carro');
+
+SELECT plainto_tsquery('portuguese','É possível escrever funções de classificação personalizadas e/ou combinar seus resultados com fatores adicionais para atender a necessidades específicas');
+SELECT 'rato gato pato'::tsvector;
+SELECT to_tsvector('rato gato pato');
+SELECT to_tsvector('pg_catalog.portuguese',
+unaccent('É possível também fazer uso do dicionário simple, que é uma das funcionalidades embutidas de configuração para busca textual que o PostgreSQL oferece.'));
+
+SELECT 'gato & rato'::tsquery;
+SELECT 'pato & (gato|rato)'::tsquery;
+SELECT '! 1'::tsquery;
+SELECT to_tsquery('!(gato & rato)') @@ to_tsvector('O gato correu atrás do rato');
+SELECT to_tsquery('(gato & rato)') @@ to_tsvector('O gato correu atrás do rato');
+SELECT to_tsquery('(gato | rato)') @@ to_tsvector('O gato correu atrás do rato');
+
+select to_tsvector('O gato correu atrás do rato');
+select concat(data->>'titulo', data->>'descricao') as documento from conteudos
+where to_tsquery('programa') @@ to s
+id=1009
+
+
+SELECT data->>'titulo' as titulo 
+FROM conteudos 
+WHERE to_tsvector(
+	concat(
+	unaccent(data->>'titutlo'),' ',
+	unaccent(data->>'descricao')
+	))
+@@
+to_tsquery(unaccent('matemática'));	 
+
+
+-- ts_rank
+SELECT ts_rank(to_tsvector('This is an example of document'),
+           	to_tsquery('example | document')) as relevancy;
+SELECT ts_rank(to_tsvector('This is an example of document'),
+           	to_tsquery('example ')) as relevancy;
+SELECT ts_rank(to_tsvector('This is an example of document'),
+           	to_tsquery('example | unkown')) as relevancy;
+SELECT ts_rank(to_tsvector('This is an example of document'),
+           	to_tsquery('example & document')) as relevancy;
+SELECT ts_rank(to_tsvector('This is an example of document'),
+           	to_tsquery('example & unknown')) as relevancy;
+
+SELECT data->>'titulo' as titulo 
+FROM aplicativos 
+WHERE (to_tsvector(data->>'titulo',data->>'descricao') 
+@@ plainto_tsquery('aprender','matematica'))
+
+-- concatena strings
+SELECT 'Concatenation' || ' ' || 'Operator' AS result_string;
+-- retorna vacio
+SELECT 'Concat with ' || NULL AS result_string;
+-- concate ignorando NULL
+SELECT CONCAT('Concat with ', NULL) as result_string; 
+-- concatena resultado
+SELECT data->>'titulo' as titulo,
+ concat ('Your first name has ', 
+	LENGTH (data->>'titulo'),
+	' characters')
+FROM
+ aplicativos;
+-- concatena e separa e ordena por titulo
+SELECT
+ concat_ws (', ', data->>'titulo', data->>'categoria') AS full_name
+FROM
+ aplicativos
+ORDER BY
+ data->>'titulo'; 
+
+SELECT concat(data->>'titulo', ' ---- ',
+	data->>'descricao') as texto
+FROM conteudos 
+WHERE id = 4555
+-- 
+SELECT data->>'titulo' as titulo
+FROM conteudos 
+WHERE (to_tsvector(data->>'descricao') @@ to_tsquery('matematica')
+OR to_tsvector(data->>'titulo') @@ to_tsquery('historia | edicao'))  
+GROUP BY titulo
+
+-- ?
+SELECT data->>'titulo' as titulo 
+FROM aplicativos 
+WHERE (to_tsvector(data->>'descricao') @@ to_tsquery('editor')
+OR to_tsvector(data->>'titulo') @@ to_tsquery('gimp | inkscape'))  
+GROUP BY titulo
+--
+SELECT data->>'titulo' as titulo,
+	data->>'descricao' as descricao 
+FROM aplicativos 
+WHERE (to_tsvector(concat(
+	data->>'titulo',
+	data->>'descricao')) 
+	@@ to_tsquery('funcao | anima'))
+
+--ORDER BY ts_rank(to_tsvector(data->>'titulo'))
+
+SELECT concat(data->>'titulo',' -- ',data->>'descricao') FROM aplicativos;
+--
+SELECT concat(to_tsvector(data->>'titulo'),' ', 
+	to_tsvector(data->>'descricao')) as documento
+FROM aplicativos
+WHERE
+
+-- to_tsvector(coalesce((string_agg(tag.name, ' ')), ''))
+
+SELECT to_tsvector(post.title) ||
+    to_tsvector(post.content) ||
+    to_tsvector(author.name) ||
+    to_tsvector(coalesce((string_agg(tag.name, ' ')), '')) as document
+FROM post
+    JOIN author ON author.id = post.author_id JOIN posts_tags ON posts_tags.post_id = posts_tags.tag_id
+    JOIN tag ON tag.id = posts_tags.tag_id
+GROUP BY post.id, author.id;
+
+SELECT to_tsvector('Try not to become a man of success, but rather try to become a man of value');
+SELECT to_tsvector('It''s kind of fun to do the impossible') @@ 'impossible';
+SELECT to_tsvector('If you can dream it, you can do it') @@ 'dream';
+SELECT 'impossible'::tsquery, to_tsquery('impossible');
+SELECT 'dream'::tsquery, to_tsquery('dream');
+SELECT to_tsvector('It''s kind of fun to do the impossible') @@ to_tsquery('impossible');
+
+--SELECT to_tsvector('If the facts don''t fit the theory, change the facts') @@ to_tsquery('! fact');
+--SELECT to_tsvector('If the facts don''t fit the theory, change the facts') @@ to_tsquery('theory & !fact');
+--SELECT to_tsvector('If the facts don''t fit the theory, change the facts.') @@ to_tsquery('fiction | theory');
+SELECT to_tsvector('If the facts don''t fit the theory, change the facts.') @@ to_tsquery('theo:*');
+
+
+-- concatena titulo e descricao e procura por programa OU aplicativo
+SELECT count(*) 
+FROM aplicativos
+where (to_tsvector(concat(data->>'titulo',' ',data->>'descricao')) 
+@@ to_tsquery('programas | aplicativo'))

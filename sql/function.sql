@@ -1,3 +1,11 @@
+select to_tsvector('english','ninja turtles') @@ plainto_tsquery('english','turtle')
+select 'aplicativos educacionais' @@ 'aplicativos';
+select to_tsvector('simple','ninja turtles') @@ to_tsquery('simple','ninja & turtles')
+select to_tsvector('simple','ninja turtles') @@ to_tsquery('simple','ninja | turtles')
+select to_tsvector('simple','ninja turtles') @@ to_tsquery('simple','ninja & !turtles')
+select ts_rank(to_tsvector('ninja turtles'),to_tsquery('turtles'));
+
+
 create table docs(
     id bigserial primary key,
     body jsonb not null,
