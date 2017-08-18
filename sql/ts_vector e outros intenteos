@@ -41,6 +41,23 @@ select to_tsvector('O gato correu atrás do rato');
 select concat(data->>'titulo', data->>'descricao') as documento from conteudos
 where to_tsquery('programa') @@ to s
 id=1009
+------------------------------------
+
+SELECT jsonb_array_elements_text(propriedades->'tags'->'tags') as tags
+FROM teste
+WHERE id =1
+ORDER BY tags;
+
+With r AS
+(Select
+ jsonb_array_elements_text(propriedades->'tags'->'tags') as tags
+FROM teste )
+Select to_tsvector('simple',string_agg(tags,' ')) as ts_vector From r;
+
+
+
+select * from json_to_recordset('[{"operation":"U","taxCode":1000},{"operation":"U","taxCode":10001}]') as x("operation" text, "taxCode" int);
+------------------------
 
 
 SELECT data->>'titulo' as titulo 
