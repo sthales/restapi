@@ -28,8 +28,8 @@ const connect = ()=> {
 client.connect();
     
     
-const getAplicativos = (callback)=> {
-    params = [5];
+const getAplicativos = (limit,callback)=> {
+    params = [limit];
     client.query("SELECT * from aplicativos LIMIT $1;",params,(err,results) =>{
         if(err){
             return callback(err);
