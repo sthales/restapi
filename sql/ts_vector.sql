@@ -141,20 +141,68 @@ ORDER BY relevancia DESC;
 
 --- LISTA tags por similitude
 
+
+SELECT titulo
+FROM   conteudodigital
+WHERE  documento @@ to_tsquery('sertao')
+
+
+
+
+
+------------- trigram-indexes extension 
+
+select idusuario from usuario 
+where username ILIKE '%nikoz.1984@gmail.com%'
+
+CREATE INDEX CONCURRENTLY idx_on_usuario_trigram
+ON usuario
+USING gin (username gin_trgm_ops);
+
+CREATE INDEX CONCURRENTLY idx_usuario_on_nomeusuario_trigram
+ON usuario
+USING gin (nomeusuario gin_trgm_ops);
+
+
+------------------
+SELECT username,COUNT(*) as count
+FROM usuario
+WHERE username ILIKE '%mail%'
+GROUP BY username;
+
+SELECT idusuario,nomeusuario
+FROM usuario
+WHERE similarity(lower(nomeusuario),'nicolas') > 0.4
+
+select * from usuario
+
+select show_trgm('nicolas');
+
+select idusuario,
+	nomeusuario,
+	SIMILARITY(unaccent(lower(nomeusuario)), 'nico') AS sml 
+FROM usuario 
+ORDER BY sml DESC
+
+SELECT nomeusuario, sml 
+FROM usuario,
+     SIMILARITY(unaccent(nomeusuario), 'matema') AS sml 	
+WHERE sml > 0.333
+ORDER BY sml DESC, nomeusuario;
+
+
 SELECT nometag, sml 
 FROM tag,
-     SIMILARITY(unaccent(nometag), 'matema') AS sml 	
+     SIMILARITY(unaccent(nometag), 'historia') AS sml 	
 WHERE sml > 0.333
 ORDER BY sml DESC, nometag;
 
 
-SELECT titulo
-FROM   conteudodigital
-WHERE  documento @@ to_tsquery('lampiao')
-
-
-
-
+SELECT titulo, sml 
+FROM conteudodigital,
+     SIMILARITY(unaccent(titulo), 'matematica') AS sml 	
+WHERE sml > 0.333
+ORDER BY sml DESC, titulo;
 
 
 
