@@ -1,4 +1,5 @@
-﻿CREATE EXTENSION unaccent;
+﻿CREATE EXTENSION plv8;
+CREATE EXTENSION unaccent;
 SELECT unaccent('èéêë comunicação');
 CREATE EXTENSION pg_trgm;
 SELECT similarity('Something','something');

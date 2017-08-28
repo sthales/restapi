@@ -12,23 +12,28 @@
 
     
 
-<h1>Teste</h1>
-<video id="videoPlayer" controls width="640" height="380">
-  <source src="http://localhost:3501/files/06.mp4" type="video/mp4">
-</video>
-
-
-<script type="text/javascript">
-        var VP = document.getElementById('videoPlayer') // player
-        var VPToggle = document.getElementById('toggleButton') // button
+    <h1>Teste</h1>
+    <video id="videoPlayer" controls="false" width="480" height="320">
+      <source src="http://localhost:3501/files/06.mp4" type="video/mp4"> 
+    </video>
+    <button onclick="playPause()">Play/Pause</button>
+    
+    
+    <div class="demo"></div>
+    <script type="text/javascript">
+        const VP = document.getElementById('videoPlayer') // player
+        const VPToggle = document.getElementById('toggleButton') // button
         console.warn('texto');
         console.warn(VP);
-        if(VP){
-            VPToggle.addEventListener('click', function() {
-                    if (VP.paused) VP.play()
-                    else VP.pause()           
-            });
+        VP.addEventListener("click", function(){
+                document.getElementById("demo").innerHTML = "Hello World";
+        });
+        function playPause(){
+            if(VP.paused)
+                VP.play();
+            else
+                VP.pause();
         }
-</script>
+    </script>
 </body>
 </html>
