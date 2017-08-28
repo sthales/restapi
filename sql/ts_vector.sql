@@ -186,7 +186,7 @@ ORDER BY sml DESC
 
 SELECT nomeusuario, sml 
 FROM usuario,
-     SIMILARITY(unaccent(nomeusuario), 'matema') AS sml 	
+     SIMILARITY(unaccent(lower(nomeusuario)), 'matematica') AS sml 	
 WHERE sml > 0.333
 ORDER BY sml DESC, nomeusuario;
 
@@ -205,13 +205,30 @@ WHERE sml > 0.333
 ORDER BY sml DESC, titulo;
 
 
+-- estudiar materialized views The simplest way to improve performance is to use a materialized view. 
+-- A materialized view is a snapshot of a query saved into a table.
+SELECT array_agg(i) FILTER (WHERE i % 2 = 0) AS twos,
+       array_agg(i) FILTER (WHERE i % 3 = 0) AS threes,
+       array_agg(i) FILTER (WHERE i % 5 = 0) AS fives,
+       array_agg(i) FILTER (WHERE i % 7 = 0) AS sevens
+  FROM generate_series(1, 20) AS g(i);
 
+--- https://pt.slideshare.net/PGDayCampinas/pgday-campinas-2013-como-full-text-search-pode-ajudar-na-busca-textual?qid=6e6a81ba-1497-4460-b821-553bb6bc826d&v=&b=&from_search=12
+ -- pag 85
+
+-- http://staruml.io/ gera DDL DER 
+
+-- http://shisaa.jp/postset/postgresql-full-text-search-part-2.html
+ 
 -- stop words ou palavras irrelevantes
 SELECT to_tsvector('english','in the list of stop words');
 SELECT ts_rank_cd (to_tsvector('english','in the list of stop words'), to_tsquery('list & stop'));
 SELECT ts_rank_cd (to_tsvector('english','list stop words'), to_tsquery('list & stop'));
 
 -- https://www.postgresql.org/docs/9.5/static/unaccent.html
+
+
+-- http://kartoza.com/en/blog/playing-with-foreign-data-wrappers-in-postgresql/
 
 -- As in basic tsquery input, weight(s) can be attached to each lexeme to restrict it to match only tsvector lexemes of those weight(s)
 SELECT to_tsquery('portuguese', 'Melão | Fotografia:AB');
